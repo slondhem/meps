@@ -1,0 +1,41 @@
+install.packages("ranger")
+install.packages("ggfortify")
+install.packages("ggsurvfit")
+
+library(survival)
+library(ranger)
+library(ggplot2)
+library(dplyr)
+library(ggfortify)
+library(ggsurvfit)
+
+
+##testing one way to do this
+km <- with(person_1_, Surv(time_to_first, EVENT))
+km_fit <- survfit(Surv(time_to_first, EVENT) ~ 1, data=person_1_)
+summary(km_fit, times = c(10, 21, 30, 60, 84, 180))
+autoplot(km_fit)
+
+##examine this by insurance type
+km_trt_fit <- survfit(Surv(time_to_first, EVENT) ~ payer, data=person_1_)
+autoplot(km_trt_fit)
+
+
+##testing another way
+
+survfit2(Surv(time_to_first, EVENT) ~ 1, data = person_1_) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Days",
+    y = "Overall survival probability"
+  )
+
+survfit2(Surv(time_to_first, EVENT) ~ 1, data = person_1_) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Days",
+    y = "Overall survival probability"
+  ) + 
+  add_confidence_interval() +
+  add_risktable()
+
